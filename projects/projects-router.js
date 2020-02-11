@@ -5,14 +5,10 @@ const router = express.Router();
 router.get('/', (req, res, next) => {
     Projects.getProjects()
         .then(projects => {
-            const convertedProjects = [...projects].map(project => {
-                project.completed = Boolean(project.completed);
-                return project;
-            });
-            res.json(convertedProjects);
+            res.status(200).json(projects);
         })
         .catch(err => {
-            next({ message: 'Failed to get projects' });
+            res.status(500).json({ message: 'Failed to get projects' });
         });
 });
 
@@ -21,21 +17,20 @@ router.get('/:id', (req, res, next) => {
 
     Projects.getProject(id)
         .then(project => {
-            const convertedProject = [...project].map(project => {
-                project.completed = Boolean(project.completed);
-                return project;
-            });
-            res.json(convertedProject);
+            res.status(200).json(project);
+        })
+        .catch(err => {
+            res.status(500).json({ message: 'Failed to get projects by id' });
         });
 });
 
 router.get('/resources', (req, res, next) => {
     Projects.getAllResources()
         .then(resources => {
-            res.json(resources);
+            res.status(200).json(resources);
         })
         .catch(err => {
-            next({ message: err });
+            res.status(500).json({ message: err });
         });
 });
 
@@ -44,10 +39,10 @@ router.get('/:id/resources', (req, res, next) => {
 
     Projects.getResources(id)
         .then(resources => {
-            res.json(resources);
+            res.status(200).json(resources);
         })
         .catch(err => {
-            next({ message: 'Failed to get resources' });
+            res.status(500).json({ message: 'Failed to get resources' });
         });
 });
 
@@ -56,14 +51,10 @@ router.get('/:id/tasks', (req, res, next) => {
 
     Projects.getTasks(id)
         .then(tasks => {
-            const convertedTasks = [...tasks].map(task => {
-                task.completed = Boolean(task.completed);
-                return task;
-            });
-            res.json(convertedTasks);
+            res.status(200).json(tasks);
         })
         .catch(err => {
-            next({ message: 'Failed to get tasks' });
+            res.status(500).json({ message: 'Failed to get tasks' });
         });
 });
 
@@ -73,15 +64,14 @@ router.post('/', (req, res, next) => {
     if (project.hasOwnProperty('completed') === false) {
         project.completed = 0;
     }
-
     if (!project.name) {
-        next({ status: 422, message: 'Project name required' });
+        res.status(400).json({ message: 'Project name required' });
     } else {
         Projects.addProject(project)
             .then(ids => {
                 (ids.length > 0)
-                    ? res.json({ message: 'Project successfully added' })
-                    : next({ message: 'Failed to add project' });
+                    ? res.status(201).json({ message: 'Project successfully added' })
+                    : res.status(500).json({ message: 'Failed to add project' });
             })
     }
 });
@@ -90,13 +80,13 @@ router.post('/resources', (req, res, next) => {
     const resource = req.body;
 
     if (!resource.name) {
-        next({ status: 422, message: 'Resource name required' });
+        res.status(400).json({ message: 'Resource name required' });
     } else {
         Projects.addResource(resource)
             .then(ids => {
                 (ids.length > 0)
-                    ? res.json({ message: 'Resource successfully added' })
-                    : next({ message: 'Failed to add resource' });
+                    ? res.status(201).json({ message: 'Resource successfully added' })
+                    : res.status(500).json({ message: 'Failed to add resource' });
             })
     }
 
@@ -112,13 +102,13 @@ router.post('/:id/tasks', (req, res, next) => {
     }
 
     if (!task.description) {
-        next({ status: 422, message: 'Task description required' });
+        res.status(400).json({ message: 'Task description required' });
     } else {
         Projects.addTask(id, task)
             .then(ids => {
                 (ids.length > 0)
-                    ? res.json({ message: 'Task successfully added' })
-                    : next({ message: 'Failed to add task' });
+                    ? res.status(201).json({ message: 'Task successfully added' })
+                    : res.status(500).json({ message: 'Failed to add task' });
             });
     }
 });
