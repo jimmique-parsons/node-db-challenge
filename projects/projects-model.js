@@ -1,5 +1,9 @@
 const db = require('./../data/db-config.js');
 
+function getProjects() {
+    return db('projects');
+}
+
 function getResources(project_id) {
     return db('projects_resources')
         .join('projects', 'projects_resources.project_id', 'projects.id')

@@ -51,7 +51,7 @@ router.get('/:id/resources', (req, res, next) => {
         });
 });
 
-rrouter.get('/:id/tasks', (req, res, next) => {
+router.get('/:id/tasks', (req, res, next) => {
     const { id } = req.params;
 
     Projects.getTasks(id)
